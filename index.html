@@ -1,128 +1,354 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Web Keren Zao</title>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>AppShelf — Galeri Aplikasi & Demo • Zao</title>
+<meta name="description" content="AppShelf: galeri 'app-store' web, preview gambar, Live Traffic Feed, lihat kode lengkap, buat banyak HTML demo otomatis" />
 <style>
-    body {
-        font-family: Arial, sans-serif;
-        background: linear-gradient(120deg, #0d47a1, #1976d2);
-        margin: 0;
-        padding: 0;
-        color: white;
-    }
-    header {
-        background: rgba(0, 0, 0, 0.6);
-        padding: 15px;
-        text-align: center;
-        font-size: 24px;
-        font-weight: bold;
-    }
-    #video-list {
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        gap: 15px;
-        padding: 15px;
-    }
-    .video-card {
-        background: rgba(255, 255, 255, 0.1);
-        border-radius: 10px;
-        padding: 10px;
-        text-align: center;
-        transition: transform 0.2s;
-    }
-    .video-card:hover {
-        transform: scale(1.05);
-        background: rgba(255, 255, 255, 0.2);
-    }
-    iframe {
-        width: 100%;
-        height: 200px;
-        border-radius: 10px;
-    }
-    button {
-        margin-top: 10px;
-        padding: 8px 15px;
-        border: none;
-        border-radius: 5px;
-        background: #00e5ff;
-        color: black;
-        font-weight: bold;
-        cursor: pointer;
-    }
-    button:hover {
-        background: #18ffff;
-    }
-    .code-box {
-        background: black;
-        color: lime;
-        padding: 10px;
-        font-family: monospace;
-        display: none;
-        text-align: left;
-        margin-top: 5px;
-        overflow-x: auto;
-    }
-    footer {
-        text-align: center;
-        padding: 15px;
-        font-size: 14px;
-        background: rgba(0, 0, 0, 0.6);
-    }
+  :root{
+    --bg:#e9f7ff; --card:#ffffff; --muted:#6b7280;
+    --accent:#0ea5e9; --accent2:#0369a1;
+    --radius:14px; --shadow: 0 16px 40px rgba(2,6,23,0.06);
+    --glass: rgba(255,255,255,0.6);
+  }
+  *{box-sizing:border-box;font-family:Inter,ui-sans-serif,system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial;}
+  body{margin:0;background:linear-gradient(180deg,var(--bg),#f3fbff);color:#052433}
+  header{backdrop-filter: blur(6px);position:sticky;top:0;z-index:80;background:linear-gradient(90deg,rgba(255,255,255,0.6),rgba(255,255,255,0.8));padding:12px 18px;display:flex;align-items:center;gap:12px;box-shadow:0 2px 8px rgba(2,6,23,0.03)}
+  .logo{display:flex;gap:10px;align-items:center;text-decoration:none;color:inherit}
+  .logo svg{width:52px;height:52px;border-radius:12px;box-shadow:0 8px 26px rgba(3,105,161,0.08)}
+  .brand{font-weight:800;font-size:18px}
+  .subtitle{font-size:12px;color:var(--muted)}
+  nav{margin-left:auto;display:flex;gap:8px;align-items:center}
+  .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;padding:8px 12px;border-radius:10px;font-weight:800;text-decoration:none;cursor:pointer;border:0;box-shadow:0 10px 26px rgba(14,165,233,0.12)}
+  .ghost{background:transparent;padding:8px 10px;border-radius:10px;border:1px solid rgba(3,105,161,0.06);cursor:pointer}
+  main{max-width:1200px;margin:22px auto;padding:12px}
+  .top-row{display:flex;gap:14px;align-items:center}
+  .search{flex:1;display:flex;gap:8px}
+  .search input{flex:1;padding:12px;border-radius:12px;border:1px solid #e6f2fb;background:linear-gradient(180deg,#fff,#f8fdff)}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;margin-left:10px}
+  .pill{padding:8px 12px;border-radius:999px;background:linear-gradient(180deg,#f3fbff,#e6f6ff);border:1px solid rgba(3,105,161,0.06);font-weight:700;font-size:13px;cursor:pointer}
+  .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-top:18px}
+  @media(max-width:1100px){.grid{grid-template-columns:repeat(2,1fr)}}
+  @media(max-width:700px){.grid{grid-template-columns:1fr}}
+  .card{background:var(--card);border-radius:var(--radius);padding:12px;box-shadow:var(--shadow);transition:transform .18s,box-shadow .18s;overflow:hidden}
+  .card:hover{transform:translateY(-8px);box-shadow:0 26px 60px rgba(2,6,23,0.08)}
+  .thumb{width:100%;height:160px;border-radius:10px;overflow:hidden;background:#f1fbff;display:flex;align-items:center;justify-content:center}
+  .thumb img{width:100%;height:100%;object-fit:cover;display:block}
+  .title{font-weight:800;margin-top:10px}
+  .desc{color:var(--muted);font-size:13px;margin-top:6px}
+  .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}
+  .actions{display:flex;gap:8px}
+  .small{padding:8px 10px;border-radius:10px;border:1px solid rgba(3,105,161,0.06);background:transparent;cursor:pointer;font-weight:700}
+  /* modal */
+  .overlay{position:fixed;inset:0;background:rgba(2,6,23,0.5);display:none;align-items:center;justify-content:center;z-index:200;padding:18px}
+  .modal{width:min(1100px,98vw);max-height:92vh;background:var(--card);border-radius:12px;padding:14px;overflow:auto}
+  .modal .row{display:flex;gap:12px}
+  .player{flex:1;border-radius:8px;overflow:hidden;background:#000;min-height:320px;display:flex;align-items:center;justify-content:center}
+  .player iframe{width:100%;height:100%;border:0}
+  .side{width:340px}
+  .code{background:#0b1020;color:#e6f1ff;padding:12px;border-radius:8px;font-family:monospace;white-space:pre;overflow:auto;font-size:13px;max-height:60vh}
+  .tabs{display:flex;gap:8px;margin-top:10px}
+  .badge{background:linear-gradient(90deg,var(--accent),var(--accent2));color:white;padding:4px 8px;border-radius:999px;font-weight:800;font-size:12px}
+  footer{max-width:1200px;margin:18px auto;padding:12px;text-align:center;color:var(--muted)}
+  /* app-store carousel (mobile) */
+  .h-scroll{display:flex;gap:12px;overflow-x:auto;padding-bottom:6px;margin-top:12px}
+  .h-item{min-width:260px;flex:0 0 auto}
+  /* pretty code highlight minimal */
+  .hl-key{color:#7ee0ff;font-weight:700}
+  .hl-str{color:#a6f3c5}
+  .download-link{display:inline-block;margin-left:8px;color:var(--accent2);font-weight:800}
 </style>
 </head>
 <body>
-<header>📹 Web Keren Zao - YouTube API + Live Traffic Feed</header>
+<header>
+  <a class="logo" href="#" onclick="window.scrollTo({top:0,behavior:'smooth'})">
+    <svg viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg"><rect width="64" height="64" rx="12" fill="#e6f7ff"/><path d="M18 24v16l14-8 14-8V24L32 30 18 24z" fill="#0369a1"/><circle cx="50" cy="14" r="6" fill="#0ea5e9" opacity="0.14"/></svg>
+  </a>
+  <div>
+    <div class="brand">AppShelf — Galeri Web & Demo</div>
+    <div class="subtitle">Klik "Lihat Code" untuk kode asli. Buka demo → halaman HTML terpisah dibuat otomatis.</div>
+  </div>
+  <nav>
+    <button class="ghost" onclick="openAllDemos()">Open Demo All</button>
+    <button class="btn" onclick="downloadAll()">Download All HTML</button>
+  </nav>
+</header>
 
-<div id="video-list">Memuat video...</div>
+<main>
+  <div class="top-row">
+    <div class="search">
+      <input id="q" placeholder="Cari: contoh 'game', 'tool', 'portfolio'..." />
+      <button class="btn" id="searchBtn">Cari</button>
+      <div class="filters" id="filters">
+        <div class="pill" data-filter="all">All</div>
+        <div class="pill" data-filter="game">Game</div>
+        <div class="pill" data-filter="tool">Tool</div>
+        <div class="pill" data-filter="media">Media</div>
+        <div class="pill" data-filter="edu">Edu</div>
+      </div>
+    </div>
+  </div>
 
-<!-- Live Traffic Feed -->
-<div style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 8px;">
-    <script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5r6c1y4m7y7&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=0&amp;bv=90&amp;hi=20" async="async"></script>
+  <!-- horizontal app-store preview (mobile friendly) -->
+  <div class="h-scroll" id="hScroll"></div>
+
+  <section class="grid" id="grid"></section>
+</main>
+
+<!-- modal -->
+<div class="overlay" id="overlay" aria-hidden="true">
+  <div class="modal" role="dialog" aria-modal="true" aria-label="Preview & Code">
+    <div style="display:flex;justify-content:space-between;align-items:center;gap:8px">
+      <div style="font-weight:800" id="modalTitle">Preview</div>
+      <div>
+        <button class="small" id="downloadBtn">Download Code</button>
+        <button class="small" id="closeModal">Close</button>
+      </div>
+    </div>
+
+    <div class="row" style="margin-top:12px;">
+      <div class="player" id="modalPlayer">Pilih item untuk preview</div>
+      <div class="side">
+        <div id="metaBox"></div>
+        <div class="tabs">
+          <button class="small" id="tabLive">Live</button>
+          <button class="small" id="tabCode">Code</button>
+        </div>
+        <div id="codeBox" style="margin-top:10px;display:none">
+          <div class="code" id="codeArea"></div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
-<footer>© 2025 Zao | Dibuat dengan ❤️</footer>
+<!-- Live Traffic Feed (fixed corner) -->
+<div style="position:fixed;right:14px;bottom:14px;z-index:90">
+  <div style="width:160px;height:160px;border-radius:12px;overflow:hidden;box-shadow:0 12px 40px rgba(2,6,23,0.12);background:white">
+    <!-- RevolverMaps widget (example) -->
+    <script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5r6c1y4m7y7&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=0&amp;bv=90&amp;hi=20" async></script>
+  </div>
+</div>
+
+<footer>© Zao — AppShelf • Live Traffic + many demos. Untuk widget lain bilang ya.</footer>
 
 <script>
-const API_KEY = "AIzaSyD-cUOfwybPHnAhmR09_YLpDV8xa20bSGA";
-const CHANNEL_ID = "UC_x5XG1OV2P6uZZ5FSM9Ttw"; // contoh channel Google Developers
-const MAX_RESULTS = 6;
+/* ======================================
+   Demo dataset — banyak item (banyak gambar)
+   Each item has:
+   - id, title, desc, tags, thumb (image), demoHtml (string), youtube (optional)
+   ======================================*/
+const ITEMS = [
+  {
+    id:'app-01', title:'Pocket Paint — Drawing Web App',
+    desc:'A simple drawing pad with colors and save to PNG.',
+    tags:['tool','media'],
+    thumb:'https://images.unsplash.com/photo-1515879218367-8466d910aaa4?q=80&w=800&auto=format&fit=crop&ixlib=rb-4.0.3&s=1c2f3d2b5f8a0df2',
+    youtube:null,
+    demoHtml: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Pocket Paint</title>
+<style>body{margin:0;font-family:Inter,Arial}#c{border:1px solid #ddd;touch-action:none}header{background:linear-gradient(90deg,#0ea5e9,#0369a1);color:#fff;padding:10px;text-align:center}</style></head><body><header>Pocket Paint</header><canvas id="c" width="800" height="500"></canvas><script>
+const c=document.getElementById('c'),ctx=c.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,c.width,c.height);
+let drawing=false, last=null; function pos(e){const r=c.getBoundingClientRect(); if(e.touches) return {x:e.touches[0].clientX - r.left, y:e.touches[0].clientY - r.top}; return {x:e.clientX - r.left, y:e.clientY - r.top}}
+c.addEventListener('pointerdown',e=>{drawing=true; last=pos(e)}); c.addEventListener('pointermove',e=>{ if(!drawing) return; const p=pos(e); ctx.strokeStyle='#111'; ctx.lineWidth=4; ctx.lineCap='round'; ctx.beginPath(); ctx.moveTo(last.x,last.y); ctx.lineTo(p.x,p.y); ctx.stroke(); last=p}); c.addEventListener('pointerup',()=>drawing=false);
+</script></body></html>`
+  },
+  {
+    id:'app-02', title:'Mini Arcade — Jump Game',
+    desc:'A tiny platformer demo with jump and obstacles (keyboard / tap).',
+    tags:['game'],
+    thumb:'https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3&s=2f2b8c8be8a1e2f',
+    youtube:'dQw4w9WgXcQ',
+    demoHtml: `<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Mini Arcade</title>
+<style>body{margin:0;background:#e0f7ff;display:flex;align-items:center;justify-content:center;height:100vh;font-family:Inter}#game{width:600px;height:140px;background:#8bd3ff;border-radius:8px;position:relative;overflow:hidden}#player{width:26px;height:26px;background:#0d47a1;position:absolute;bottom:10px;left:30px;border-radius:4px}</style></head><body><div id="game"><div id="player"></div></div><script>
+const p=document.getElementById('player'); let vy=0, onGround=true; function step(){vy+=0.8; let y=parseFloat(p.style.bottom); y-=vy; if(y<10){ y=10; vy=0; onGround=true } p.style.bottom=y+'px'; requestAnimationFrame(step)} document.addEventListener('keydown',e=>{ if((e.code==='Space'||e.code==='ArrowUp') && onGround){ vy=-12; onGround=false } }); step();
+</script></body></html>`
+  },
+  {
+    id:'app-03', title:'Recipe Cards — Fancy Grid',
+    desc:'Grid of recipe cards with hover effects and detail modal.',
+    tags:['media','edu'],
+    thumb:'https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=900&auto=format&fit=crop&ixlib=rb-4.0.3&s=6e1c3b1d5b4e8b7c',
+    youtube:null,
+    demoHtml:`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Recipe Cards</title><style>body{margin:0;font-family:Inter}ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;padding:12px}li{list-style:none;background:#fff;padding:12px;border-radius:10px;box-shadow:0 8px 22px rgba(2,6,23,0.06)}img{width:100%;border-radius:8px}</style></head><body><ul><li><img src="https://images.unsplash.com/photo-1493809842364-78817add7ffb?q=80&w=800&auto=format&fit=crop"> <h3>Salad</h3><p>Fresh and green.</p></li><li><img src="https://images.unsplash.com/photo-1506084868230-bb9d95c24759?q=80&w=800&auto=format&fit=crop"><h3>Pasta</h3><p>Italian classic.</p></li></ul></body></html>`
+  },
+  // add many more items to be "banyak"
+];
 
-async function loadVideos() {
-    try {
-        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
-        const data = await res.json();
-
-        let html = "";
-        data.items.forEach(item => {
-            if (item.id.kind === "youtube#video") {
-                html += `
-                    <div class="video-card">
-                        <iframe src="https://www.youtube.com/embed/${item.id.videoId}" frameborder="0" allowfullscreen></iframe>
-                        <h3>${item.snippet.title}</h3>
-                        <button onclick="toggleCode(this)">Lihat Code</button>
-                        <div class="code-box">
-                            &lt;iframe src="https://www.youtube.com/embed/${item.id.videoId}" width="560" height="315"&gt;&lt;/iframe&gt;
-                        </div>
-                    </div>
-                `;
-            }
-        });
-
-        document.getElementById("video-list").innerHTML = html;
-    } catch (error) {
-        document.getElementById("video-list").innerHTML = "Gagal memuat video 😢";
-        console.error(error);
-    }
+// add some generated items to reach a lot (we'll clone a few)
+for(let i=4;i<=14;i++){
+  ITEMS.push({
+    id:`app-${String(i).padStart(2,'0')}`,
+    title:`Demo Mini ${i}`,
+    desc:`Contoh demo otomatis nomor ${i}.`,
+    tags: i%2?['tool']:['game'],
+    thumb:`https://picsum.photos/seed/demo${i}/800/480`,
+    youtube: i%3===0 ? 'dQw4w9WgXcQ' : null,
+    demoHtml:`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Demo Mini ${i}</title><style>body{font-family:Inter;margin:0;display:flex;align-items:center;justify-content:center;height:100vh;background:linear-gradient(90deg,#e6f7ff,#f3fbff)}.box{padding:18px;border-radius:12px;background:#fff;box-shadow:0 12px 30px rgba(2,6,23,0.06)}</style></head><body><div class="box"><h2>Demo Mini ${i}</h2><p>Ini halaman demo yang dibuat otomatis.</p></div></body></html>`
+  });
 }
 
-function toggleCode(btn) {
-    const box = btn.nextElementSibling;
-    box.style.display = (box.style.display === "none" || box.style.display === "") ? "block" : "none";
+/* Render grid + h-scroll */
+const grid = document.getElementById('grid');
+const hScroll = document.getElementById('hScroll');
+
+function createCard(item){
+  const el = document.createElement('article');
+  el.className='card';
+  el.innerHTML = `
+    <div class="thumb"><img loading="lazy" src="${item.thumb}" alt="${escapeHtml(item.title)}"></div>
+    <div class="title">${escapeHtml(item.title)}</div>
+    <div class="desc">${escapeHtml(item.desc)}</div>
+    <div class="meta-row">
+      <div class="badge">${item.tags.join(', ')}</div>
+      <div class="actions">
+        <button class="small" data-act="preview" data-id="${item.id}">Preview</button>
+        <button class="small" data-act="demo" data-id="${item.id}">Open Demo</button>
+        <button class="small" data-act="code" data-id="${item.id}">Lihat Code</button>
+        <a class="download-link" data-act="download" data-id="${item.id}" href="#" title="Download HTML">↓</a>
+      </div>
+    </div>
+  `;
+  return el;
 }
 
-loadVideos();
+function renderAll(list){
+  grid.innerHTML=''; hScroll.innerHTML='';
+  list.forEach(it=>{
+    grid.appendChild(createCard(it));
+    // h-scroll item
+    const h = document.createElement('div'); h.className='h-item';
+    h.innerHTML = `<div class="card" style="min-width:240px"><div class="thumb" style="height:140px"><img src="${it.thumb}"></div><div style="padding:8px"><div class="title">${escapeHtml(it.title)}</div><div class="desc" style="font-size:13px">${escapeHtml(it.desc)}</div></div></div>`;
+    hScroll.appendChild(h);
+  });
+}
+renderAll(ITEMS);
+
+/* search + filter */
+document.getElementById('searchBtn').addEventListener('click', ()=> {
+  const q = document.getElementById('q').value.trim().toLowerCase();
+  const filtered = ITEMS.filter(it => !q || it.title.toLowerCase().includes(q) || it.desc.toLowerCase().includes(q) || it.tags.join(' ').includes(q));
+  renderAll(filtered);
+});
+document.querySelectorAll('.pill').forEach(p=>{
+  p.addEventListener('click', ()=> {
+    const f = p.dataset.filter;
+    if(f==='all') renderAll(ITEMS);
+    else renderAll(ITEMS.filter(it => it.tags.includes(f)));
+  });
+});
+
+/* delegate click actions */
+document.addEventListener('click', async (e)=>{
+  const act = e.target.dataset.act;
+  const id = e.target.dataset.id;
+  if(!act || !id) return;
+  const item = ITEMS.find(x=>x.id===id);
+  if(!item) return alert('Item not found');
+  if(act==='preview') openModal(item);
+  if(act==='demo') openDemoPage(item);
+  if(act==='code') showCode(item);
+  if(e.target.dataset.act==='download') {
+    e.preventDefault();
+    downloadDemo(item);
+  }
+});
+
+/* modal logic */
+const overlay = document.getElementById('overlay');
+const modalPlayer = document.getElementById('modalPlayer');
+const metaBox = document.getElementById('metaBox');
+const codeBox = document.getElementById('codeBox');
+const codeArea = document.getElementById('codeArea');
+const modalTitle = document.getElementById('modalTitle');
+document.getElementById('closeModal').addEventListener('click', ()=> overlay.style.display='none');
+document.getElementById('tabLive').addEventListener('click', ()=> { codeBox.style.display='none'; modalPlayer.style.display='block' })
+document.getElementById('tabCode').addEventListener('click', ()=> { codeBox.style.display='block'; modalPlayer.style.display='none' })
+document.getElementById('downloadBtn').addEventListener('click', ()=> {
+  const id = overlay.dataset.current;
+  const it = ITEMS.find(x=>x.id===id);
+  if(it) downloadDemo(it);
+});
+
+function openModal(item){
+  overlay.style.display='flex';
+  overlay.dataset.current = item.id;
+  modalTitle.textContent = item.title;
+  // player: if youtube -> embed, else show image + Open Demo
+  if(item.youtube){
+    modalPlayer.innerHTML = `<iframe src="https://www.youtube-nocookie.com/embed/${item.youtube}?rel=0" allow="autoplay; encrypted-media" allowfullscreen></iframe>`;
+  }else{
+    modalPlayer.innerHTML = `<div style="padding:20px;text-align:center"><img src="${item.thumb}" style="max-width:100%;border-radius:8px"></div>`;
+  }
+  metaBox.innerHTML = `<div style="font-weight:800">${escapeHtml(item.title)}</div><div style="color:${'#6b7280'};margin-top:6px">${escapeHtml(item.desc)}</div><div style="margin-top:10px"><strong>Tags:</strong> ${item.tags.join(', ')}</div>`;
+  codeBox.style.display='none';
+  codeArea.textContent = '';
+}
+
+/* show code -> full HTML string with highlight */
+function showCode(item){
+  overlay.style.display='flex';
+  overlay.dataset.current = item.id;
+  modalTitle.textContent = item.title + ' — Code';
+  modalPlayer.style.display='none';
+  codeBox.style.display='block';
+  // prepare pretty code (escape)
+  const code = item.demoHtml;
+  codeArea.textContent = beautifyHtml(code);
+}
+
+/* create separate demo page (Blob) and open */
+function openDemoPage(item){
+  const html = item.demoHtml;
+  const blob = new Blob([html], {type:'text/html'});
+  const url = URL.createObjectURL(blob);
+  window.open(url, '_blank');
+}
+
+/* download demo as file */
+function downloadDemo(item){
+  const blob = new Blob([item.demoHtml], {type:'text/html'});
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = `${item.id}.html`; document.body.appendChild(a); a.click(); a.remove();
+}
+
+/* Open all demos in multiple tabs (careful: many tabs) */
+function openAllDemos(){
+  ITEMS.forEach(it => {
+    const blob = new Blob([it.demoHtml], {type:'text/html'});
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  });
+}
+
+/* download all as zip-like: actually multiple downloads (browser limitation) */
+function downloadAll(){
+  if(!confirm('Download all demo HTML files? (browser akan memulai banyak unduhan)')) return;
+  ITEMS.forEach((it,idx)=>{
+    setTimeout(()=> downloadDemo(it), idx*500);
+  });
+}
+
+/* small helpers */
+function escapeHtml(s){ if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function beautifyHtml(s){
+  // tiny pretty: add line breaks between tags for readability (not full formatter)
+  return s.replace(/></g, '>\n<').trim();
+}
+
+/* keyboard: Esc closes modal */
+document.addEventListener('keydown', e=>{ if(e.key==='Escape') overlay.style.display='none' });
+
+/* optional: auto-populate first preview for UX */
+setTimeout(()=> {
+  if(ITEMS.length) {
+    // show first as small preview (not modal)
+    const mini = ITEMS[0];
+    const miniThumb = document.querySelector('#grid .thumb img');
+    // nothing heavy
+  }
+},800);
+
 </script>
 </body>
 </html>

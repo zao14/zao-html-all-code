@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Web Keren Zao</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        background: linear-gradient(120deg, #0d47a1, #1976d2);
+        margin: 0;
+        padding: 0;
+        color: white;
+    }
+    header {
+        background: rgba(0, 0, 0, 0.6);
+        padding: 15px;
+        text-align: center;
+        font-size: 24px;
+        font-weight: bold;
+    }
+    #video-list {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 15px;
+        padding: 15px;
+    }
+    .video-card {
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 10px;
+        padding: 10px;
+        text-align: center;
+        transition: transform 0.2s;
+    }
+    .video-card:hover {
+        transform: scale(1.05);
+        background: rgba(255, 255, 255, 0.2);
+    }
+    iframe {
+        width: 100%;
+        height: 200px;
+        border-radius: 10px;
+    }
+    button {
+        margin-top: 10px;
+        padding: 8px 15px;
+        border: none;
+        border-radius: 5px;
+        background: #00e5ff;
+        color: black;
+        font-weight: bold;
+        cursor: pointer;
+    }
+    button:hover {
+        background: #18ffff;
+    }
+    .code-box {
+        background: black;
+        color: lime;
+        padding: 10px;
+        font-family: monospace;
+        display: none;
+        text-align: left;
+        margin-top: 5px;
+        overflow-x: auto;
+    }
+    footer {
+        text-align: center;
+        padding: 15px;
+        font-size: 14px;
+        background: rgba(0, 0, 0, 0.6);
+    }
+</style>
+</head>
+<body>
+<header>📹 Web Keren Zao - YouTube API + Live Traffic Feed</header>
+
+<div id="video-list">Memuat video...</div>
+
+<!-- Live Traffic Feed -->
+<div style="position: fixed; bottom: 10px; right: 10px; background: rgba(0,0,0,0.7); padding: 8px; border-radius: 8px;">
+    <script type="text/javascript" src="//rf.revolvermaps.com/0/0/8.js?i=5r6c1y4m7y7&amp;m=0&amp;c=ff0000&amp;cr1=ffffff&amp;f=arial&amp;l=0&amp;bv=90&amp;hi=20" async="async"></script>
+</div>
+
+<footer>© 2025 Zao | Dibuat dengan ❤️</footer>
+
+<script>
+const API_KEY = "AIzaSyD-cUOfwybPHnAhmR09_YLpDV8xa20bSGA";
+const CHANNEL_ID = "UC_x5XG1OV2P6uZZ5FSM9Ttw"; // contoh channel Google Developers
+const MAX_RESULTS = 6;
+
+async function loadVideos() {
+    try {
+        const res = await fetch(`https://www.googleapis.com/youtube/v3/search?key=${API_KEY}&channelId=${CHANNEL_ID}&part=snippet,id&order=date&maxResults=${MAX_RESULTS}`);
+        const data = await res.json();
+
+        let html = "";
+        data.items.forEach(item => {
+            if (item.id.kind === "youtube#video") {
+                html += `
+                    <div class="video-card">
+                        <iframe src="https://www.youtube.com/embed/${item.id.videoId}" frameborder="0" allowfullscreen></iframe>
+                        <h3>${item.snippet.title}</h3>
+                        <button onclick="toggleCode(this)">Lihat Code</button>
+                        <div class="code-box">
+                            &lt;iframe src="https://www.youtube.com/embed/${item.id.videoId}" width="560" height="315"&gt;&lt;/iframe&gt;
+                        </div>
+                    </div>
+                `;
+            }
+        });
+
+        document.getElementById("video-list").innerHTML = html;
+    } catch (error) {
+        document.getElementById("video-list").innerHTML = "Gagal memuat video 😢";
+        console.error(error);
+    }
+}
+
+function toggleCode(btn) {
+    const box = btn.nextElementSibling;
+    box.style.display = (box.style.display === "none" || box.style.display === "") ? "block" : "none";
+}
+
+loadVideos();
+</script>
+</body>
+</html>
